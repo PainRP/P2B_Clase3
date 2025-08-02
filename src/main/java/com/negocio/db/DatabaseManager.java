@@ -5,10 +5,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Clase utilitaria para gestionar la conexión y la inicialización de la base de datos SQLite.
+ */
 public class DatabaseManager {
     private static final String DB_URL = "jdbc:sqlite:foodnet.db";
     private static Connection connection;
 
+    /**
+     * Obtiene la conexión a la base de datos, inicializando las tablas si es necesario.
+     */
     public static Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(DB_URL);
@@ -17,13 +23,16 @@ public class DatabaseManager {
         return connection;
     }
 
+    /**
+     * Inicializa las tablas principales de la base de datos si no existen.
+     */
     private static void inicializarTablas() {
         try (Statement stmt = connection.createStatement()) {
             // Crear tabla productos
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS productos (
                     id INTEGER PRIMARY KEY,
-                    nombre TEXT NOT NULL,
+                    nombre TEXT NOT NULL UNIQUE,
                     precio REAL NOT NULL,
                     stock INTEGER NOT NULL
                 )
@@ -54,6 +63,9 @@ public class DatabaseManager {
         }
     }
 
+    /**
+     * Cierra la conexión a la base de datos si está abierta.
+     */
     public static void cerrarConexion() {
         try {
             if (connection != null && !connection.isClosed()) {

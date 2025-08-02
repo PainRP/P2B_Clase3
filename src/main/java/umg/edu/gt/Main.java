@@ -9,11 +9,17 @@ import com.negocio.db.DatabaseManager;
 
 import java.util.Scanner;
 
+/**
+ * Clase principal que contiene el menú y la lógica de interacción con el usuario para FoodNet.
+ */
 public class Main {
     private static InventarioService inventarioService;
     private static PedidoService pedidoService;
     private static Scanner scanner;
 
+    /**
+     * Método principal. Inicia la aplicación y muestra el menú principal.
+     */
     public static void main(String[] args) {
         System.out.println("=== FOODNET - Simulador de Negocio de Comida Rápida ===");
 
@@ -49,6 +55,9 @@ public class Main {
                     aplicarDescuentoAPedido();
                     break;
                 case 7:
+                    agregarProducto();
+                    break;
+                case 8:
                     continuar = false;
                     break;
                 default:
@@ -61,6 +70,9 @@ public class Main {
         System.out.println("¡Gracias por usar FoodNet!");
     }
 
+    /**
+     * Muestra el menú principal por consola.
+     */
     private static void mostrarMenu() {
         System.out.println("\n--- MENÚ PRINCIPAL ---");
         System.out.println("1. Ver inventario");
@@ -69,10 +81,14 @@ public class Main {
         System.out.println("4. Ver pedidos");
         System.out.println("5. Ver ingresos totales");
         System.out.println("6. Aplicar descuento a pedido");
-        System.out.println("7. Salir");
+        System.out.println("7. Agregar nuevo producto al inventario");
+        System.out.println("8. Salir");
         System.out.print("Seleccione una opción: ");
     }
 
+    /**
+     * Muestra el inventario de productos disponibles.
+     */
     private static void mostrarInventario() {
         System.out.println("\n--- INVENTARIO ---");
         for (Producto producto : inventarioService.obtenerProductosDisponibles()) {
@@ -80,6 +96,9 @@ public class Main {
         }
     }
 
+    /**
+     * Crea un nuevo pedido solicitando los datos del cliente.
+     */
     private static void crearNuevoPedido() {
         System.out.print("Nombre del cliente: ");
         String nombre = scanner.nextLine();
@@ -92,6 +111,9 @@ public class Main {
         System.out.println("Pedido creado con ID: " + pedido.getId());
     }
 
+    /**
+     * Agrega un producto a un pedido existente.
+     */
     private static void agregarProductoAPedido() {
         System.out.print("ID del pedido: ");
         int pedidoId = scanner.nextInt();
@@ -107,16 +129,25 @@ public class Main {
         }
     }
 
+    /**
+     * Muestra todos los pedidos registrados.
+     */
     private static void mostrarPedidos() {
         System.out.println("\n--- PEDIDOS ---");
         pedidoService.mostrarPedidos();
     }
 
+    /**
+     * Muestra los ingresos totales generados por los pedidos.
+     */
     private static void mostrarIngresos() {
         double ingresos = pedidoService.calcularIngresosTotales();
         System.out.println("Ingresos totales: Q" + ingresos);
     }
 
+    /**
+     * Aplica un descuento a un pedido (funcionalidad en desarrollo).
+     */
     private static void aplicarDescuentoAPedido() {
         System.out.print("ID del pedido: ");
         int pedidoId = scanner.nextInt();
@@ -125,5 +156,37 @@ public class Main {
 
         // Buscar pedido y aplicar descuento (simplificado para el ejemplo)
         System.out.println("Función de descuento en desarrollo...");
+    }
+
+    /**
+     * Agrega un nuevo producto al inventario solicitando los datos al usuario.
+     */
+    private static void agregarProducto() {
+            System.out.print("Nombre del producto: ");
+            String nombre = scanner.nextLine();
+
+            System.out.print("Precio del producto: ");
+            double precio = scanner.nextDouble();
+            if (precio <= 0) {
+                System.out.println("El precio debe ser mayor que cero.");
+                scanner.nextLine();
+                return;
+            }
+
+            System.out.print("Stock del producto: ");
+            int stock = scanner.nextInt();
+            if (stock < 0) {
+                System.out.println("El stock no puede ser negativo.");
+                scanner.nextLine();
+                return;
+            }
+            scanner.nextLine();
+
+            Producto nuevoProducto = new Producto(0, nombre, precio, stock);
+            if (inventarioService.agregarProducto(nuevoProducto)) {
+                System.out.println("Producto agregado exitosamente");
+            } else {
+                System.out.println("Error al agregar producto");
+            }
     }
 }
